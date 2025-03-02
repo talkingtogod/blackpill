@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dark Minimalist</title>
+    <style>
+        body {
+            background-color: #ffffff; /* Changed background to white */
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            cursor: none; /* Hide the cursor for a more immersive experience */
+        }
+
+        .image-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .image {
+            transition: transform 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Video Styles */
+        #videoElement {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
+            z-index: 101; /* Make sure the video is above other content */
+            max-width: 80%;
+            max-height: 80%;
+        }
+    </style>
+</head>
+<body>
+<div class="image-container" id="container">
+    <div class="image" id="moveImage">
+        <img src="wp.png" alt="Image" />
+    </div>
+</div>
+
+<!-- Video element -->
+<video id="videoElement" width="320" height="240" controls>
+    <source src="video/newvideo.mp4" type="video/mp4"> <!-- Updated video source -->
+    Your browser does not support the video tag.
+</video>
+
+<script>
+    // Elements
+    const body = document.body;
+    const container = document.getElementById('container');
+    const image = document.getElementById('moveImage');
+    const videoElement = document.getElementById('videoElement');
+    
+    // Create audio element
+    const audioPlayer = new Audio();
+    audioPlayer.volume = 1.0; // Maximum volume
+    
+    // List of songs in the playlist (Updated playlist)
+    const playlist = [
+        "song/newsong1.mp3",
+        "song/newsong2.mp3",
+        "song/newsong3.mp3",
+        "song/newsong4.mp3",
+        "song/newsong5.mp3"
+    ];
+    
+    let currentSongIndex = 0;
+    
+    // Function to play a song
+    function playSong(index) {
+        if (index >= playlist.length) {
+            index = 0; // Loop back to the first song
+        }
+        
+        currentSongIndex = index;
+        audioPlayer.src = playlist[currentSongIndex];
+        
+        // Try to play with a promise to handle autoplay restrictions
+        const playPromise = audioPlayer.play();
+        
+        if (playPromise !== undefined) {
+            playPromise.catch(error => {
+                // Auto-play was prevented
+                console.log("Autoplay prevented, waiting for user interaction");
+            });
+        }
+    }
+    
+    // When a song ends, play the next one
+    audioPlayer.addEventListener('ended', () => {
+        playSong(currentSongIndex + 1);
+    });
+    
+    // Function to request fullscreen
+    function enterFullscreen() {
+        if (body.requestFullscreen) {
+            body.requestFullscreen();
+        } else if (body.mozRequestFullScreen) { /* Firefox */
+            body.mozRequestFullScreen();
+        } else if (body.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+            body.webkitRequestFullscreen();
+        } else if (body.msRequestFullscreen) { /* IE/Edge */
+            body.msRequestFullscreen();
+        }
+    }
+    
+    // Start experience after a slight delay to avoid being blocked by the browser
+    window.addEventListener('load', () => {
+        // Request fullscreen after the page loads
+        setTimeout(() => {
+            enterFullscreen();
+            playSong(0);
+            setupMouseTracking();
+        }, 1000); // Delay fullscreen request to increase chance of success
+    });
+    
+    // Setup mouse tracking for image movement
+    function setupMouseTracking() {
+        document.addEventListener('mousemove', (e) => {
+            const mouseX = e.clientX - window.innerWidth / 2;
+            const mouseY = e.clientY - window.innerHeight / 2;
+            
+            const distance = Math.sqrt(mouseX * mouseX + mouseY * mouseY);
+            const maxDistance = Math.sqrt(
+                (window.innerWidth / 2) * (window.innerWidth / 2) + 
+                (window.innerHeight / 2) * (window.innerHeight / 2)
+            );
+            
+            const moveFactor = 50 * (distance / maxDistance);
+            
+            const moveX = -mouseX * (moveFactor / distance) || 0;
+            const moveY = -mouseY * (moveFactor / distance) || 0;
+            
+            image.style.transform = `translate(${moveX}px, ${moveY}px)`;
+        });
+        
+        document.addEventListener('mouseleave', () => {
+            image.style.transform = 'translate(0, 0)';
+        });
+    }
+    
+    // Handle right-click and show the video
+    document.addEventListener('contextmenu', (e) => {
+        e.preventDefault(); // Prevent the right-click menu
+
+        // Stop the music when the video appears
+        audioPlayer.pause();
+        audioPlayer.currentTime = 0;
+
+        // Show the video and play it
+        videoElement.style.display = 'block';
+        videoElement.play();
+
+        // When the video ends, hide it and resume the music
+        videoElement.onended = () => {
+            videoElement.style.display = 'none';
+            // Resume the music from where it was paused
+            playSong(currentSongIndex);
+        };
+    });
+
+    // Handle fullscreen change
+    document.addEventListener('fullscreenchange', () => {
+        if (!document.fullscreenElement) {
+            // User exited fullscreen, but we'll keep playing music
+            console.log("Exited fullscreen");
+        }
+    });
+</script>
+</body>
+</html>
