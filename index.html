@@ -48,7 +48,6 @@
             z-index: 101; /* Make sure the video is above other content */
             max-width: 80%;
             max-height: 80%;
-            pointer-events: none; /* Disable interactions with the video */
         }
     </style>
 </head>
@@ -60,7 +59,7 @@
 </div>
 
 <!-- Video element -->
-<video id="videoElement" width="320" height="240">
+<video id="videoElement" width="320" height="240" controls>
     <source src="video/mini.mp4" type="video/mp4">
     Your browser does not support the video tag.
 </video>
@@ -168,18 +167,9 @@
         audioPlayer.pause();
         audioPlayer.currentTime = 0;
 
-        // Set both the video and music volume to max
-        videoElement.volume = 1.0; // Maximum volume
-        audioPlayer.volume = 1.0; // Maximum volume
-
         // Show the video and play it
         videoElement.style.display = 'block';
         videoElement.play();
-
-        // Disable controls for the video and prevent user interaction
-        videoElement.controls = false; // Disable controls
-        videoElement.setAttribute("muted", "true"); // Mute the video (optional)
-        videoElement.style.pointerEvents = 'none'; // Prevent interaction with the video (clicking, pausing, seeking)
 
         // When the video ends, hide it and resume the music
         videoElement.onended = () => {
