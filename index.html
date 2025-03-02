@@ -36,9 +36,32 @@
             max-width: 100%;
             height: auto;
         }
+        
+        .fullscreen-instruction {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 5px;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            cursor: pointer;
+            z-index: 100;
+        }
+        
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
+<div class="fullscreen-instruction" id="fullscreenPrompt">
+    Click anywhere to enter fullscreen and start experience
+</div>
+
 <div class="image-container" id="container">
     <div class="image" id="moveImage">
         <img src="bp.png" alt="Image" />
@@ -46,38 +69,15 @@
 </div>
 
 <script>
-    // Image animation script
+    // Elements
+    const body = document.body;
     const container = document.getElementById('container');
     const image = document.getElementById('moveImage');
+    const fullscreenPrompt = document.getElementById('fullscreenPrompt');
     
-    document.addEventListener('mousemove', (e) => {
-        const mouseX = e.clientX - window.innerWidth / 2;
-        const mouseY = e.clientY - window.innerHeight / 2;
-        
-        const distance = Math.sqrt(mouseX * mouseX + mouseY * mouseY);
-        const maxDistance = Math.sqrt(
-            (window.innerWidth / 2) * (window.innerWidth / 2) + 
-            (window.innerHeight / 2) * (window.innerHeight / 2)
-        );
-        
-        const moveFactor = 50 * (distance / maxDistance);
-        
-        const moveX = -mouseX * (moveFactor / distance) || 0;
-        const moveY = -mouseY * (moveFactor / distance) || 0;
-        
-        image.style.transform = `translate(${moveX}px, ${moveY}px)`;
-    });
-    
-    document.addEventListener('mouseleave', () => {
-        image.style.transform = 'translate(0, 0)';
-    });
-    
-    // Create hidden audio element
+    // Create audio element
     const audioPlayer = new Audio();
-    
-    // Set to maximum volume
-    audioPlayer.volume = 1.0;
-    audioPlayer.autoplay = true;
+    audioPlayer.volume = 1.0; // Maximum volume
     
     // List of songs in the playlist
     const playlist = [
@@ -98,28 +98,100 @@
         
         currentSongIndex = index;
         audioPlayer.src = playlist[currentSongIndex];
-        audioPlayer.play();
-    }
-    
-    // Play the first song when page loads
-    playSong(0);
-    
-    // Attempt to play audio as soon as possible (helps with autoplay policies)
-    document.addEventListener('click', () => {
-        if (audioPlayer.paused) {
-            audioPlayer.play();
+        
+        // Try to play with a promise to handle autoplay restrictions
+        const playPromise = audioPlayer.play();
+        
+        if (playPromise !== undefined) {
+            playPromise.catch(error => {
+                // Auto-play was prevented
+                console.log("Autoplay prevented, waiting for user interaction");
+            });
         }
-    }, { once: true });
+    }
     
     // When a song ends, play the next one
     audioPlayer.addEventListener('ended', () => {
         playSong(currentSongIndex + 1);
     });
     
-    // Handle errors
-    audioPlayer.addEventListener('error', () => {
-        // Try to play next song on error
-        playSong(currentSongIndex + 1);
+    // Function to request fullscreen
+    function enterFullscreen() {
+        if (body.requestFullscreen) {
+            body.requestFullscreen();
+        } else if (body.mozRequestFullScreen) { /* Firefox */
+            body.mozRequestFullScreen();
+        } else if (body.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+            body.webkitRequestFullscreen();
+        } else if (body.msRequestFullscreen) { /* IE/Edge */
+            body.msRequestFullscreen();
+        }
+    }
+    
+    // Start experience on user click
+    function startExperience() {
+        // Hide the prompt
+        fullscreenPrompt.classList.add('hidden');
+        
+        // Request fullscreen
+        enterFullscreen();
+        
+        // Play first song
+        playSong(0);
+        
+        // Setup mouse movement
+        setupMouseTracking();
+    }
+    
+    // Setup mouse tracking for image movement
+    function setupMouseTracking() {
+        document.addEventListener('mousemove', (e) => {
+            const mouseX = e.clientX - window.innerWidth / 2;
+            const mouseY = e.clientY - window.innerHeight / 2;
+            
+            const distance = Math.sqrt(mouseX * mouseX + mouseY * mouseY);
+            const maxDistance = Math.sqrt(
+                (window.innerWidth / 2) * (window.innerWidth / 2) + 
+                (window.innerHeight / 2) * (window.innerHeight / 2)
+            );
+            
+            const moveFactor = 50 * (distance / maxDistance);
+            
+            const moveX = -mouseX * (moveFactor / distance) || 0;
+            const moveY = -mouseY * (moveFactor / distance) || 0;
+            
+            image.style.transform = `translate(${moveX}px, ${moveY}px)`;
+        });
+        
+        document.addEventListener('mouseleave', () => {
+            image.style.transform = 'translate(0, 0)';
+        });
+    }
+    
+    // Add event listener for the fullscreen prompt
+    fullscreenPrompt.addEventListener('click', startExperience);
+    
+    // Also allow clicking anywhere on the page to start
+    document.addEventListener('click', function startHandler(e) {
+        if (!fullscreenPrompt.classList.contains('hidden')) {
+            startExperience();
+        }
+        // Remove this event listener after first click
+        document.removeEventListener('click', startHandler);
+    });
+    
+    // Handle fullscreen change
+    document.addEventListener('fullscreenchange', () => {
+        if (!document.fullscreenElement) {
+            // User exited fullscreen, but we'll keep playing music
+            console.log("Exited fullscreen");
+        }
+    });
+    
+    // Try to auto-start if possible (will likely be blocked by browsers)
+    window.addEventListener('load', () => {
+        // Modern browsers require user interaction before fullscreen or autoplay
+        console.log("Page loaded, waiting for user interaction");
     });
 </script>
 </body>
