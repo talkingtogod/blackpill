@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pill Selection</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #121212;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-gap: 40px;
+            max-width: 800px;
+        }
+        .pill {
+            text-align: center;
+        }
+        .pill img {
+            width: 100%;
+            max-width: 300px;
+            height: auto;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        .pill img:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="pill">
+            <a href="redpill.html">
+                <img src="rp.png" alt="Red Pill">
+            </a>
+        </div>
+        <div class="pill">
+            <a href="bluepill.html">
+                <img src="pp.png" alt="Blue Pill">
+            </a>
+        </div>
+        <div class="pill">
+            <a href="blackpill.html">
+                <img src="bp.png" alt="Black Pill">
+            </a>
+        </div>
+        <div class="pill">
+            <a href="whitepill.html">
+                <img src="wp.png" alt="White Pill">
+            </a>
+        </div>
+    </div>
+</body>
+</html>
