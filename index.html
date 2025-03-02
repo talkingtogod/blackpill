@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dark Minimalist</title>
+    <style>
+        body {
+            background-color: #000000;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        
+        .image-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .image {
+            width: 250px;
+            height: 250px;
+            background-color: #111;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #333;
+            font-family: sans-serif;
+            font-size: 12px;
+        }
+        
+
+        .placeholder-text {
+            opacity: 0.5;
+            font-size: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="image-container" id="container">
+    <div class="image" id="moveImage">
+        <img src="bp.png" alt="Image" />
+    </div>
+</div>
+    <script>
+
+        const container = document.getElementById('container');
+        const image = document.getElementById('moveImage');
+        
+
+        document.addEventListener('mousemove', (e) => {
+
+            const mouseX = e.clientX - window.innerWidth / 2;
+            const mouseY = e.clientY - window.innerHeight / 2;
+            
+
+            const distance = Math.sqrt(mouseX * mouseX + mouseY * mouseY);
+            const maxDistance = Math.sqrt(
+                (window.innerWidth / 2) * (window.innerWidth / 2) + 
+                (window.innerHeight / 2) * (window.innerHeight / 2)
+            );
+            
+
+            const moveFactor = 20 * (distance / maxDistance);
+            
+
+            const moveX = -mouseX * (moveFactor / distance) || 0;
+            const moveY = -mouseY * (moveFactor / distance) || 0;
+            
+
+            image.style.transform = `translate(${moveX}px, ${moveY}px)`;
+        });
+        
+
+        document.addEventListener('mouseleave', () => {
+            image.style.transform = 'translate(0, 0)';
+        });
+    </script>
+</body>
+</html>
