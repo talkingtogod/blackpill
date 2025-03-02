@@ -36,32 +36,9 @@
             max-width: 100%;
             height: auto;
         }
-        
-        .fullscreen-instruction {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 20px;
-            border-radius: 5px;
-            font-family: Arial, sans-serif;
-            text-align: center;
-            cursor: pointer;
-            z-index: 100;
-        }
-        
-        .hidden {
-            display: none;
-        }
     </style>
 </head>
 <body>
-<div class="fullscreen-instruction" id="fullscreenPrompt">
-    Click anywhere to enter fullscreen and start experience
-</div>
-
 <div class="image-container" id="container">
     <div class="image" id="moveImage">
         <img src="bp.png" alt="Image" />
@@ -73,7 +50,6 @@
     const body = document.body;
     const container = document.getElementById('container');
     const image = document.getElementById('moveImage');
-    const fullscreenPrompt = document.getElementById('fullscreenPrompt');
     
     // Create audio element
     const audioPlayer = new Audio();
@@ -128,20 +104,15 @@
         }
     }
     
-    // Start experience on user click
-    function startExperience() {
-        // Hide the prompt
-        fullscreenPrompt.classList.add('hidden');
-        
-        // Request fullscreen
-        enterFullscreen();
-        
-        // Play first song
-        playSong(0);
-        
-        // Setup mouse movement
-        setupMouseTracking();
-    }
+    // Start experience after a slight delay to avoid being blocked by the browser
+    window.addEventListener('load', () => {
+        // Request fullscreen after the page loads
+        setTimeout(() => {
+            enterFullscreen();
+            playSong(0);
+            setupMouseTracking();
+        }, 1000); // Delay fullscreen request to increase chance of success
+    });
     
     // Setup mouse tracking for image movement
     function setupMouseTracking() {
@@ -168,30 +139,12 @@
         });
     }
     
-    // Add event listener for the fullscreen prompt
-    fullscreenPrompt.addEventListener('click', startExperience);
-    
-    // Also allow clicking anywhere on the page to start
-    document.addEventListener('click', function startHandler(e) {
-        if (!fullscreenPrompt.classList.contains('hidden')) {
-            startExperience();
-        }
-        // Remove this event listener after first click
-        document.removeEventListener('click', startHandler);
-    });
-    
     // Handle fullscreen change
     document.addEventListener('fullscreenchange', () => {
         if (!document.fullscreenElement) {
             // User exited fullscreen, but we'll keep playing music
             console.log("Exited fullscreen");
         }
-    });
-    
-    // Try to auto-start if possible (will likely be blocked by browsers)
-    window.addEventListener('load', () => {
-        // Modern browsers require user interaction before fullscreen or autoplay
-        console.log("Page loaded, waiting for user interaction");
     });
 </script>
 </body>
