@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pill Selection</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+        
         body {
             margin: 0;
             padding: 0;
@@ -14,6 +16,8 @@
             align-items: center;
             height: 100vh;
             overflow: hidden;
+            font-family: 'Orbitron', sans-serif;
+            color: #ffffff;
         }
         .container {
             display: grid;
@@ -26,30 +30,92 @@
         }
         .pill {
             text-align: center;
+            position: relative;
+            overflow: hidden;
         }
         .pill img {
-            width: 250px;    /* Fixed width */
-            height: 250px;   /* Fixed height */
+            width: 250px;
+            height: 250px;
             cursor: pointer;
-            transition: transform 0.3s ease;
-            object-fit: cover; /* Ensures the image fills the box without distortion */
-            border-radius: 10px; /* Optional: adds a nice rounded corner to the images */
+            transition: transform 0.3s ease, filter 0.3s ease;
+            object-fit: cover;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
         }
-        .pill img:hover {
-            transform: scale(1.05); /* Slight zoom effect on hover */
+        .pill:hover img {
+            transform: scale(1.05);
+            filter: brightness(0.8);
+        }
+        .pill-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            opacity: 0;
+            transition: opacity 0.3s ease, transform 0.5s ease;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+            pointer-events: none;
+        }
+        .pill:hover .pill-text {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+        .black-pill .pill-text {
+            color: #ff3333;
+        }
+        .white-pill .pill-text {
+            color: #33ccff;
+        }
+        .title {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 3rem;
+            letter-spacing: 4px;
+            color: #ffffff;
+            animation: glow 2s infinite alternate;
+            grid-column: span 2;
+        }
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #e60073, 0 0 40px #e60073;
+            }
+            to {
+                text-shadow: 0 0 20px #fff, 0 0 30px #ff4da6, 0 0 40px #ff4da6, 0 0 50px #ff4da6;
+            }
+        }
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="pill">
+        <div class="title pulse">CHOOSE YOUR REALITY</div>
+        <div class="pill black-pill">
             <a href="blackpill.html">
                 <img src="bp.png" alt="Black Pill">
+                <div class="pill-text">BLACKPILL</div>
             </a>
         </div>
-        <div class="pill">
+        <div class="pill white-pill">
             <a href="whitepill.html">
                 <img src="wp.png" alt="White Pill">
+                <div class="pill-text">WHITEPILL</div>
             </a>
         </div>
     </div>
