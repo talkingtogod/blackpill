@@ -20,19 +20,22 @@
             grid-template-columns: repeat(2, 1fr);
             grid-gap: 80px;
             max-width: 1000px;
+            width: 100%;
+            padding: 20px;
+            box-sizing: border-box;
         }
         .pill {
             text-align: center;
         }
         .pill img {
-            width: 250px;
-            height: 250px;
+            width: 250px;    /* Fixed width */
+            height: 250px;   /* Fixed height */
             cursor: pointer;
             transition: transform 0.3s ease;
-            object-fit: cover;
+            object-fit: cover; /* Ensures the image fills the box without distortion */
         }
         .pill img:hover {
-            transform: scale(1.05);
+            transform: scale(1.05); /* Slight zoom effect on hover */
         }
     </style>
 </head>
