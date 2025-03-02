@@ -44,32 +44,83 @@
         <img src="bp.png" alt="Image" />
     </div>
 </div>
-    <script>
-        const container = document.getElementById('container');
-        const image = document.getElementById('moveImage');
+
+<script>
+    // Image animation script
+    const container = document.getElementById('container');
+    const image = document.getElementById('moveImage');
+    
+    document.addEventListener('mousemove', (e) => {
+        const mouseX = e.clientX - window.innerWidth / 2;
+        const mouseY = e.clientY - window.innerHeight / 2;
         
-        document.addEventListener('mousemove', (e) => {
-            const mouseX = e.clientX - window.innerWidth / 2;
-            const mouseY = e.clientY - window.innerHeight / 2;
-            
-            const distance = Math.sqrt(mouseX * mouseX + mouseY * mouseY);
-            const maxDistance = Math.sqrt(
-                (window.innerWidth / 2) * (window.innerWidth / 2) + 
-                (window.innerHeight / 2) * (window.innerHeight / 2)
-            );
-            
-            // Increased movement factor from 20 to 50 for more pronounced movement
-            const moveFactor = 50 * (distance / maxDistance);
-            
-            const moveX = -mouseX * (moveFactor / distance) || 0;
-            const moveY = -mouseY * (moveFactor / distance) || 0;
-            
-            image.style.transform = `translate(${moveX}px, ${moveY}px)`;
-        });
+        const distance = Math.sqrt(mouseX * mouseX + mouseY * mouseY);
+        const maxDistance = Math.sqrt(
+            (window.innerWidth / 2) * (window.innerWidth / 2) + 
+            (window.innerHeight / 2) * (window.innerHeight / 2)
+        );
         
-        document.addEventListener('mouseleave', () => {
-            image.style.transform = 'translate(0, 0)';
-        });
-    </script>
+        const moveFactor = 50 * (distance / maxDistance);
+        
+        const moveX = -mouseX * (moveFactor / distance) || 0;
+        const moveY = -mouseY * (moveFactor / distance) || 0;
+        
+        image.style.transform = `translate(${moveX}px, ${moveY}px)`;
+    });
+    
+    document.addEventListener('mouseleave', () => {
+        image.style.transform = 'translate(0, 0)';
+    });
+    
+    // Create hidden audio element
+    const audioPlayer = new Audio();
+    
+    // Set to maximum volume
+    audioPlayer.volume = 1.0;
+    audioPlayer.autoplay = true;
+    
+    // List of songs in the playlist
+    const playlist = [
+        "song/1.mp3",
+        "song/2.mp3",
+        "song/3.mp3",
+        "song/4.mp3",
+        "song/5.mp3"
+    ];
+    
+    let currentSongIndex = 0;
+    
+    // Function to play a song
+    function playSong(index) {
+        if (index >= playlist.length) {
+            index = 0; // Loop back to the first song
+        }
+        
+        currentSongIndex = index;
+        audioPlayer.src = playlist[currentSongIndex];
+        audioPlayer.play();
+    }
+    
+    // Play the first song when page loads
+    playSong(0);
+    
+    // Attempt to play audio as soon as possible (helps with autoplay policies)
+    document.addEventListener('click', () => {
+        if (audioPlayer.paused) {
+            audioPlayer.play();
+        }
+    }, { once: true });
+    
+    // When a song ends, play the next one
+    audioPlayer.addEventListener('ended', () => {
+        playSong(currentSongIndex + 1);
+    });
+    
+    // Handle errors
+    audioPlayer.addEventListener('error', () => {
+        // Try to play next song on error
+        playSong(currentSongIndex + 1);
+    });
+</script>
 </body>
 </html>
